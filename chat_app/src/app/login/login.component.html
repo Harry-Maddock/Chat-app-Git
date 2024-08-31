@@ -1,9 +1,27 @@
-<p>chat works!</p>
+<title>Login</title>
+
+Already a user? sign in<p></p>
 
 Username:
-<input type="text" [(ngModel)]]="Username"> <br>
+<input type="text" [(ngModel)]="sign_in_username"> <br>
 
 Password:
-<input type="password" [(ngModel)]]="password"> <br>
+<input type="password" [(ngModel)]="sign_in_password"> <br>
 
-<button id="login" (click)="setItem()"> Login</button>"
+<button id="login" (click)="Login()">Login</button>
+
+<p><br><p><br><p><br>
+
+Sign up?<p></p>
+Username:
+<input type="text" [(ngModel)]="username"> <br>
+
+Email:
+<input type="text" [(ngModel)]="email"> <br>
+
+Password:
+<input type="password" [(ngModel)]="password"> <br>
+re-enter password
+<input type="password" [(ngModel)]="otherpassword"> <br>
+
+<button id="Sign up" (click)="Signup()">Sign up</button>

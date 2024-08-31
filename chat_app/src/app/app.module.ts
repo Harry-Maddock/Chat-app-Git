@@ -7,6 +7,7 @@ import { LoginComponent } from "./login/login.component";
 import { AccountComponent } from "./account/account.component";
 import { HomeComponent } from "./home/home.component";
 import { ChatComponent } from "./chat/chat.component";
+import { UserService } from './user.service'; 
 
 @NgModule({
     declarations: [
@@ -21,7 +22,7 @@ import { ChatComponent } from "./chat/chat.component";
         AppRoutingModule,
         FormsModule, 
     ],
-    providers: [],
+    providers: [UserService],
     bootstrap: [AppComponent]
 })
 export class AppModule {}
