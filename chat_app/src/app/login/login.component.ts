@@ -36,7 +36,8 @@ export class LoginComponent implements OnInit{
   Login(){
     this.info = this.userService.getItem(this.sign_in_username);
     if(this.info[0] == this.sign_in_password){
-      this.router.navigateByUrl(`/account?username=${encodeURIComponent(this.sign_in_username)}&email=${encodeURIComponent(this.info[1])}&privilige=${encodeURIComponent(this.info[3])}`);
+      document.cookie="Login_id="+this.sign_in_username+";Max-Age=10000"
+      this.router.navigateByUrl(`/account`);
     }
     else {
       alert("Username or password incorrect")

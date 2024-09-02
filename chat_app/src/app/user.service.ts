@@ -4,12 +4,11 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class UserService { 
-  id = 0;
-  users: { [key: string]: any } = {};
-
+  id = 1;
+  users: { [key: string]: any } = {["SuperAdmin"]: ["Pass123", "Admin@email.com", 0, "Super Admin"]};
+  
   constructor() {
-
-   }
+  }
 
   setItem(username: string, password: any, email: any){
     if (!(username in this.users)) {
@@ -21,8 +20,8 @@ export class UserService {
       return("The username already exists");
     } 
   }
-
   getItem(username: string){
     return this.users[username];
   }
+
 }
