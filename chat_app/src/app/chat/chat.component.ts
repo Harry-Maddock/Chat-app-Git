@@ -15,7 +15,7 @@ export class ChatComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      this.chatName = params.get('chat_name');
+    this.chatName = params.get('chat_name');
     });
   }
 }

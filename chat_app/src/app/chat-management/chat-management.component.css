@@ -1,0 +1,3 @@
+table.bordered    { border: solid; border-width: thin; }
+table.bordered td { border: solid; border-width: thin; }
+table.bordered th { border: solid; border-width: thin; border-color: black; }

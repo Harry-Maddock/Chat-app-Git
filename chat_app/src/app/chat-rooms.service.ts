@@ -9,10 +9,18 @@ export class ChatRoomsService {
   Subgroups: { [key: string]: any}  = {};
   Requests: { [key: string]: any} = {}
   constructor() {
-    localStorage.setItem("Members Default", "Super");
-    localStorage.setItem("Admin Default", "Super");
-    localStorage.setItem("Subgroups Default", "default");
-    localStorage.setItem("Requests Default", "");
+    if (!localStorage.getItem('Members Default')) {
+      localStorage.setItem("Members Default", "Super");
+    }
+    if (!localStorage.getItem('Admin Default')) {  
+      localStorage.setItem("Admin Default", "Super");
+    }
+    if (!localStorage.getItem('Subgroups Default')) {  
+      localStorage.setItem("Subgroups Default", "default"); 
+    }
+    if (!localStorage.getItem('Requests Default')) {  
+      localStorage.setItem("Requests Default", ""); 
+    }
     for (let i = 0; i < localStorage.length; i++) {
       var key = localStorage.key(i); 
       if(key !== null){
@@ -20,7 +28,7 @@ export class ChatRoomsService {
           const value = localStorage.getItem(key); 
           localStorage.getItem
           key = key.replace("Members ", ""); 
-          this.Members[key] = [value?.split(",")];
+          this.Members[key] = value?.split(",");
         }
         if (key.includes("Admin")) {
           const value = localStorage.getItem(key); 
@@ -50,22 +58,44 @@ export class ChatRoomsService {
   }
 
   Adduser(Name: string, Username: any){
-    this.Members[Name].push(Username);
+    if(!(Username in this.Members[Name])){
+      this.Members[Name].push(Username);
+      this.save(Name);
+    }
+  }
+  Remove_request(Name: string, member: string){
+    this.Requests[Name].splice(this.Requests[Name].indexOf(member), 1);
     this.save(Name);
   }
-
   Addsubgroup(Name: string, Sub_group: string){
-    this.Subgroups[Name].push(Sub_group);
+    if(!(Sub_group in this.Subgroups[Name])){
+      this.Subgroups[Name].push(Sub_group);
+      this.save(Name);
+    }
+  }
+  Remove_member(Name: string, member: string){
+    this.Members[Name].splice(this.Members[Name].indexOf(member), 1);
     this.save(Name);
   }
-
+    
   getItem(Name: string){
-    return[this.Members[Name], this.Subgroups[Name], this.Admin[Name]]; 
+    return[this.Members[Name], this.Subgroups[Name], this.Admin[Name], this.Requests[Name]]; 
   }
 
   AddRequest(Name: string, user: string){
-    this.Requests[Name].push(user);
-    this.save(Name);
+    var check = 0;
+    for(var req in this.Requests[Name]){
+      for(var x in this.Requests[Name][req]){
+        if(user == this.Requests[Name][req][x]){
+          check = 1;
+        }
+      }
+    }
+    if(check == 0){
+      this.Requests[Name].push(user);
+      this.Requests[Name].shift();
+      this.save(Name);
+    }
   }
 
   removeItem(Name: string) {

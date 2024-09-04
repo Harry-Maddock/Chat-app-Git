@@ -40,7 +40,6 @@ export class LoginComponent implements OnInit{
   }
   Login(){
     this.info = this.userService.getItem(this.sign_in_username);
-    console.log(this.info[0]);
     if(!(this.info == undefined)){
       if(this.info[0] == this.sign_in_password){
         document.cookie="Login_id="+this.sign_in_username+";Max-Age=10000"
@@ -53,7 +52,7 @@ export class LoginComponent implements OnInit{
       }
     }
     else{
-      alert("ERROR: username not found");3
+      alert("ERROR: username not found");
       this.empty();
     }
   }

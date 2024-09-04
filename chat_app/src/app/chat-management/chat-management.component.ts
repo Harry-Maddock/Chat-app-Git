@@ -24,13 +24,30 @@ export class ChatManagementComponent implements OnInit {
   Members: string[] = [];
   constructor(private route: ActivatedRoute, private chatroomService: ChatRoomsService, private userService: UserService, private router: Router) { }
 
-  approve(member: string){}
-  deny(member: string){}
-  remove(member: string){}
-
+  approve(member: string){
+    if(this.chatName != null){
+      this.userService.addGroup(member, this.chatName);
+      this.chatroomService.Remove_request(this.chatName, member);
+      this.chatroomService.Adduser(this.chatName, member);
+    } 
+  }
+  deny(member: string){
+    if(this.chatName != null){
+      this.chatroomService.Remove_request(this.chatName, member);
+    }
+  }
+  remove(member: string){
+    if(this.chatName != null){
+      this.userService.remove_group(this.chatName, member);
+      this.chatroomService.Remove_member(this.chatName, member);
+    }
+  }
+  back(){
+    this.router.navigateByUrl('/account');
+  }
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      this.chatName = params.get('chat_name');
+    this.chatName = params.get('chat_name');
     });
     let Name = document.cookie.split(";");
     Name = (Name[0].split("="));
@@ -38,17 +55,12 @@ export class ChatManagementComponent implements OnInit {
     this.username = Name[1];
     this.email = this.info[1];
     this.privileges = this.info[3];
-    for(var room in Object.keys(this.chatroomService.Admin)){
-      this.Rooms.push(room);
-      var temp = this.chatroomService.getItem(room)[1];
-      this.Requests.push(temp);
-      var temp = this.chatroomService.getItem(room)[0];
-      this.Members.push(temp);
-
+    if(!(this.chatName == null)){
+      var room = this.chatroomService.getItem(this.chatName);
+      [this.Members, this.Rooms, this.Admins, this.Requests] = room;
+      if(this.Requests[0] == "undefined"){
+        this.Requests.shift();
+      }
     }
-    for(var room in Object.keys(this.chatroomService.Admin)){
-      this.Admins.push(room);
-    }
-    
   }
 }

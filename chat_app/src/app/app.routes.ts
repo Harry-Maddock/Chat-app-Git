@@ -8,7 +8,7 @@ import { ChatManagementComponent } from './chat-management/chat-management.compo
 export const routes: Routes = [
     {path: '', component: HomeComponent },
     {path: 'login', component: LoginComponent},
-    {path: 'chat', component: ChatComponent},
+    {path: 'chat/:chat_name', component: ChatComponent},
     {path: 'account', component: AccountComponent},
     { path: 'chatmanagement/:chat_name', component: ChatManagementComponent },
 ];

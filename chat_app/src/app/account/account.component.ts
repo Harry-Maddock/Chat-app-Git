@@ -26,7 +26,8 @@ export class AccountComponent implements OnInit {
   Added_sub_group = '';
   test_val = 1;
   groups: string[] = [];
-  admins: string[] = []
+  member_of: string[] = [];
+  admins: string[] = [];
   users: string[][] = [];
   sub_groups: string[][] = [];
   
@@ -38,7 +39,6 @@ export class AccountComponent implements OnInit {
     this.router.navigateByUrl('/login');
   }
   request(room:string){
-    console.log(room);
     this.chatroomService.AddRequest(room, this.username);
   }
   delete_account(){
@@ -52,17 +52,11 @@ export class AccountComponent implements OnInit {
     this.chatroomService.set_Item(this.username, this.Added_group);
     this.userService.addGroup(this.username, this.Added_group);
   }
-
-  Add_User(){
-    this.chatroomService.Adduser(this.Added_group, this.Added_user);
+  chat(chatName: string): void {
+    this.router.navigateByUrl(`/chat/${chatName}`);
   }
-  
-  Add_subgroup(){
-    this.chatroomService.Addsubgroup(this.Added_group, this.Added_sub_group);
-  }
-
-  navigateToChatManagement(): void {
-    this.router.navigateByUrl('/chatmanagement/${chatName}');
+  Manage(chatName: string): void {
+    this.router.navigateByUrl(`/chatmanagement/${chatName}`);
   }
 
   ngOnInit(): void {
@@ -74,7 +68,6 @@ export class AccountComponent implements OnInit {
     this.privileges = this.info[3];
     if(this.privileges == "Super Admin" || this.privileges == "Group Admin"){
       this.groups = this.userService.getGroups(this.username);
-      console.log(this.groups);
       for(var group in this.groups){
         const result = this.chatroomService.getItem(this.groups[group]);
         if (result[2] == this.username){
@@ -97,9 +90,15 @@ export class AccountComponent implements OnInit {
     else{
       for(var room in Object.keys(this.chatroomService.Admin)){
         var temp = [];
-        this.groups.push(Object.keys(this.chatroomService.Admin)[room]);
+        for(var check in this.userService.users_groups[this.username]){
+          if(Object.keys(this.chatroomService.Admin)[room] == this.userService.users_groups[this.username][check]){
+            this.member_of.push(this.userService.users_groups[this.username][check])
+          }
+          else{
+            this.groups.push(Object.keys(this.chatroomService.Admin)[room]);
+          }
+        }
         this.sub_groups.push(this.chatroomService.getItem(Object.keys(this.chatroomService.Admin)[room])[1]);
-        
       }
       for(var room in Object.values(this.chatroomService.Admin)){
         this.admins.push(Object.values(this.chatroomService.Admin)[room]);

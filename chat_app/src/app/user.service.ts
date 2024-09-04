@@ -9,8 +9,12 @@ export class UserService {
   users_groups: { [key: string]: any } = {};
   
   constructor() {
-    localStorage.setItem("user Super", "123,Admin@email.com,0,Super Admin");
-    localStorage.setItem("rooms Super", "Default");
+    if (!localStorage.getItem('user Super')) {
+      localStorage.setItem("user Super", "123,Admin@email.com,0,Super Admin");
+    }
+    if (!localStorage.getItem('rooms Super')) {
+      localStorage.setItem("rooms Super", "Default");
+    }
     for (let i = 0; i < localStorage.length; i++) {
       var key = localStorage.key(i); 
       if(key !== null){
@@ -20,11 +24,11 @@ export class UserService {
           key = key.replace("user ", ""); 
           this.users[key] = value?.split(",");
         }
-        if (key.includes("room")) {
+        if (key.includes("rooms")) {
           const value = localStorage.getItem(key); 
           key = key.replace("rooms ", ""); 
-          this.users_groups[key] = [value?.split(",")];
-        }
+          this.users_groups[key] = value?.split(",");
+        } 
       }
     }
   } 
@@ -42,10 +46,15 @@ export class UserService {
   }
   addGroup(username: string, group: string){
     this.users_groups[username].push(group);
+    this.users_groups[username].shift();
     this.save(username);
   }
   getGroups(username: string){
     return this.users_groups[username];
+  }
+  remove_group(username: string, group: string){
+    this.users_groups[username].splice(this.users_groups[username].indexOf(group), 1);
+    this.save(username);
   }
   save(username: string){
     localStorage.setItem("user "+username, this.users[username]);

@@ -5,6 +5,15 @@ your email is {{email}}
 Your are currently a {{privileges}}
 <p> <br>
 You are a part of the following chats:
+<table class="bordered">
+    <tr><th>Chat Name</th><th>Chat Sub Groups</th><th>Group Admin</th><th>view</th></tr>
+    <tr *ngFor="let group of groups; let i = index">
+        <td>{{ member_of[i] }}</td>
+        <td>{{ sub_groups[i] }}</td>
+        <td>{{ admins[i] }}</td>
+        <td> <button (click)="chat(member_of[i])">view</button></td>
+    </tr>
+</table>
 <p> <br>
 <div *ngIf="privileges === 'Chat User'">
     Chats you can join:
@@ -25,8 +34,6 @@ You are a part of the following chats:
     Create new chat room? Enter the name below: <br>
     <input type="Chat room name" [(ngModel)]="Added_group"> <br>
     <button id="Add" (click)="Add_group()">Add</button>
-
-    <button id="Manage" (click)="navigateToChatManagement()">Manage</button>
     Chats you admin:
     <table class="bordered">
         <tr><th>Chat Name</th><th>Chat Sub Groups</th><th>Enrolled Users</th><th>Manage</th></tr>
@@ -34,7 +41,7 @@ You are a part of the following chats:
             <td>{{ groups[i] }}</td>
             <td>{{ sub_groups[i] }}</td>
             <td>{{ users[i] }}</td>
-            <td><button id="Manage" (click)="navigateToChatManagement()">Manage</button></td>
+            <td><button id="Manage" (click)="Manage(groups[i])">Manage</button></td>
         </tr>
     </table>
 </div>
