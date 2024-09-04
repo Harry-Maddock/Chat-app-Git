@@ -22,3 +22,7 @@ app.get('/account', function (req, res) {
 app.get('/chat', function (req, res) {
     res.sendFile(__dirname + '/src/app/chat/chat.component.html');
 })
+
+app.get('/chatmanagement', function (req, res) {
+    res.sendFile(__dirname + '/src/app/chat-management/chat-management.component.html');
+})

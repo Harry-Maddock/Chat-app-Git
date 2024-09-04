@@ -18,32 +18,56 @@ export class LoginComponent implements OnInit{
   otherpassword = '';
   email = '';
   info = [];
+
   constructor(private userService: UserService, private router: Router){}
   Signup() {
     if (this.password != this.otherpassword){
       alert("Passwords do not match, try again")
+      this.empty();
     }
-    else {
-      this.userService.setItem(this.username, this.password, this.email);
-      alert("Signed up successfully")
-      console.log(this.userService.users);
-      this.username = '';
-      this.password = '';
-      this.otherpassword = '';
-      this.email = '';
+    else{
+      this.info = this.userService.getItem(this.username);
+      if(!(this.info == undefined)){
+      alert("Username taken");
+      this.empty();
+      }
+      else {
+        this.userService.setItem(this.username, this.password, this.email);
+        alert("Signed up successfully")
+        this.empty();
+      }
     }
   }
   Login(){
     this.info = this.userService.getItem(this.sign_in_username);
-    if(this.info[0] == this.sign_in_password){
-      document.cookie="Login_id="+this.sign_in_username+";Max-Age=10000"
-      this.router.navigateByUrl(`/account`);
+    console.log(this.info[0]);
+    if(!(this.info == undefined)){
+      if(this.info[0] == this.sign_in_password){
+        document.cookie="Login_id="+this.sign_in_username+";Max-Age=10000"
+        this.empty();
+        this.router.navigateByUrl(`/account`);
+      }
+      else {
+        alert("Username or password incorrect");
+        this.empty();
+      }
     }
-    else {
-      alert("Username or password incorrect")
+    else{
+      alert("ERROR: username not found");3
+      this.empty();
     }
   }
+  
+  empty(){
+    this.sign_in_username = '';
+    this.sign_in_password = '';
+    this.username = '';
+    this.password = '';
+    this.otherpassword = '';
+    this.email = '';
+    this.info = [];
+
+  }
   ngOnInit() {
-    
   }
 }

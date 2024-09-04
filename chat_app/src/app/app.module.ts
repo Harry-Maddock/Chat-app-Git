@@ -8,6 +8,7 @@ import { AccountComponent } from "./account/account.component";
 import { HomeComponent } from "./home/home.component";
 import { ChatComponent } from "./chat/chat.component";
 import { UserService } from './user.service'; 
+import { ChatManagementComponent } from "./chat-management/chat-management.component";
 
 @NgModule({
     declarations: [
@@ -15,7 +16,8 @@ import { UserService } from './user.service';
         LoginComponent,
         ChatComponent,
         HomeComponent,
-        AccountComponent
+        AccountComponent,
+        ChatManagementComponent
     ],
     imports: [
         BrowserModule,

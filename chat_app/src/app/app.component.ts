@@ -4,13 +4,13 @@ import { LoginComponent } from "./login/login.component";
 import { ChatComponent } from "./chat/chat.component";
 import { HomeComponent } from "./home/home.component";
 import { AccountComponent } from "./account/account.component";
-
+import { ChatManagementComponent } from './chat-management/chat-management.component';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, AccountComponent, LoginComponent, ChatComponent, HomeComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, AccountComponent, LoginComponent, ChatComponent, HomeComponent, ChatManagementComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

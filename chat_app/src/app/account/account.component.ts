@@ -1,11 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserService } from '../user.service';
+import { ChatRoomsService } from '../chat-rooms.service';
+import { CommonModule } from '@angular/common';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from "@angular/forms";
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-account',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
   templateUrl: './account.component.html',
   styleUrl: './account.component.css'
 })
@@ -16,8 +21,49 @@ export class AccountComponent implements OnInit {
   loginId = ""
   info = [];
   Name = "";
+  Added_user = '';
+  Added_group = '';
+  Added_sub_group = '';
+  test_val = 1;
+  groups: string[] = [];
+  admins: string[] = []
+  users: string[][] = [];
+  sub_groups: string[][] = [];
+  
+  constructor(private userService: UserService, private chatroomService: ChatRoomsService, private router: Router) {}
 
-  constructor(private userService: UserService, private route: ActivatedRoute) {}
+  logout(){
+    document.cookie="";
+    alert("logout successful, returning to login page.");
+    this.router.navigateByUrl('/login');
+  }
+  request(room:string){
+    console.log(room);
+    this.chatroomService.AddRequest(room, this.username);
+  }
+  delete_account(){
+    this.userService.removeItem(this.username);
+    document.cookie="";
+    alert("account successfully deleted!");
+    this.router.navigateByUrl('/login');
+  }
+
+  Add_group(){
+    this.chatroomService.set_Item(this.username, this.Added_group);
+    this.userService.addGroup(this.username, this.Added_group);
+  }
+
+  Add_User(){
+    this.chatroomService.Adduser(this.Added_group, this.Added_user);
+  }
+  
+  Add_subgroup(){
+    this.chatroomService.Addsubgroup(this.Added_group, this.Added_sub_group);
+  }
+
+  navigateToChatManagement(): void {
+    this.router.navigateByUrl('/chatmanagement/${chatName}');
+  }
 
   ngOnInit(): void {
     let Name = document.cookie.split(";");
@@ -26,5 +72,39 @@ export class AccountComponent implements OnInit {
     this.username = Name[1];
     this.email = this.info[1];
     this.privileges = this.info[3];
+    if(this.privileges == "Super Admin" || this.privileges == "Group Admin"){
+      this.groups = this.userService.getGroups(this.username);
+      console.log(this.groups);
+      for(var group in this.groups){
+        const result = this.chatroomService.getItem(this.groups[group]);
+        if (result[2] == this.username){
+          var temp = [];
+          for(var set in result[0]){
+              temp.push(result[0][set]);
+            }
+            this.users.push(temp);
+            var temp = [];
+          for(var set in result[1]){
+            temp.push(result[1][set]);
+            }
+            this.sub_groups.push(temp);
+        }
+        else{
+          this.groups.slice(-1, 1);
+        }
+      }
+    }
+    else{
+      for(var room in Object.keys(this.chatroomService.Admin)){
+        var temp = [];
+        this.groups.push(Object.keys(this.chatroomService.Admin)[room]);
+        this.sub_groups.push(this.chatroomService.getItem(Object.keys(this.chatroomService.Admin)[room])[1]);
+        
+      }
+      for(var room in Object.values(this.chatroomService.Admin)){
+        this.admins.push(Object.values(this.chatroomService.Admin)[room]);
+      }
+    }
   }
 }
+

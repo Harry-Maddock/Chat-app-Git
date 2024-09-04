@@ -1,0 +1,17 @@
+<div *ngIf="privileges === 'Group Admin' || privileges === 'Super Admin'">
+    <table class="bordered">
+        <tr><th>Current members</th><th>remove?</th></tr>
+        <tr *ngFor="let member of Members; let i = index">
+            <td>{{ Members[i] }}</td>
+            <td><button id="remove" (click)="remove(Requests[i])">remove</button></td>
+        </tr>
+    </table>
+    <table class="bordered">
+        <tr><th>Current requests</th><th>approve?</th><th>deny request?</th></tr>
+        <tr *ngFor="let request of Requests; let i = index">
+            <td>{{ Requests[i] }}</td>
+            <td><button id="remove" (click)="approve(Requests[i])">approve</button></td>
+            <td><button id="deny" (click)="deny(Requests[i])">deny</button></td>
+        </tr>
+    </table>
+</div>
