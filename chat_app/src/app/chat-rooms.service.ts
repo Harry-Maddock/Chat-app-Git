@@ -1,113 +1,44 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatRoomsService {
-  Members: { [key: string]: any } = {};
-  Admin: { [key: string]: any } = {};
-  Subgroups: { [key: string]: any}  = {};
-  Requests: { [key: string]: any} = {}
-  constructor() {
-    if (!localStorage.getItem('Members Default')) {
-      localStorage.setItem("Members Default", "Super");
-    }
-    if (!localStorage.getItem('Admin Default')) {  
-      localStorage.setItem("Admin Default", "Super");
-    }
-    if (!localStorage.getItem('Subgroups Default')) {  
-      localStorage.setItem("Subgroups Default", "default"); 
-    }
-    if (!localStorage.getItem('Requests Default')) {  
-      localStorage.setItem("Requests Default", ""); 
-    }
-    for (let i = 0; i < localStorage.length; i++) {
-      var key = localStorage.key(i); 
-      if(key !== null){
-        if (key.includes("Members")) {
-          const value = localStorage.getItem(key); 
-          localStorage.getItem
-          key = key.replace("Members ", ""); 
-          this.Members[key] = value?.split(",");
-        }
-        if (key.includes("Admin")) {
-          const value = localStorage.getItem(key); 
-          key = key.replace("Admin ", ""); 
-          this.Admin[key] = value;
-        }
-        if (key.includes("Subgroups")) {
-          const value = localStorage.getItem(key); 
-          localStorage.getItem
-          key = key.replace("Subgroups ", ""); 
-          this.Subgroups[key] = [value?.split(",")];
-        }
-        if (key.includes("Requests")) {
-          const value = localStorage.getItem(key); 
-          key = key.replace("Requests ", ""); 
-          this.Requests[key] = [value?.split(",")];
-        }
-      }
-    }
+  private URL = 'http://localhost:3000'; // Your server URL
+
+  constructor(private http: HttpClient) {}
+
+  set_Item(admin: string, name: string): Observable<any> {
+    return this.http.post(`${this.URL}/setItem`, { admin, name });
   }
 
-  set_Item(admin: string, Name: string){
-    this.Admin[Name] = admin;
-    this.Members[Name] = [admin];
-    this.Subgroups[Name] = [];
-    this.save(Name);
+  Adduser(name: string, username: any): Observable<any> {
+    return this.http.post(`${this.URL}/addUser`, { name, username });
   }
 
-  Adduser(Name: string, Username: any){
-    if(!(Username in this.Members[Name])){
-      this.Members[Name].push(Username);
-      this.save(Name);
-    }
-  }
-  Remove_request(Name: string, member: string){
-    this.Requests[Name].splice(this.Requests[Name].indexOf(member), 1);
-    this.save(Name);
-  }
-  Addsubgroup(Name: string, Sub_group: string){
-    if(!(Sub_group in this.Subgroups[Name])){
-      this.Subgroups[Name].push(Sub_group);
-      this.save(Name);
-    }
-  }
-  Remove_member(Name: string, member: string){
-    this.Members[Name].splice(this.Members[Name].indexOf(member), 1);
-    this.save(Name);
-  }
-    
-  getItem(Name: string){
-    return[this.Members[Name], this.Subgroups[Name], this.Admin[Name], this.Requests[Name]]; 
+  Remove_request(name: string, member: string): Observable<any> {
+    return this.http.post(`${this.URL}/removeRequest`, { name, member });
   }
 
-  AddRequest(Name: string, user: string){
-    var check = 0;
-    for(var req in this.Requests[Name]){
-      for(var x in this.Requests[Name][req]){
-        if(user == this.Requests[Name][req][x]){
-          check = 1;
-        }
-      }
-    }
-    if(check == 0){
-      this.Requests[Name].push(user);
-      this.Requests[Name].shift();
-      this.save(Name);
-    }
+  Addsubgroup(name: string, subgroup: string): Observable<any> {
+    return this.http.post(`${this.URL}/addSubgroup`, { name, subgroup });
   }
 
-  removeItem(Name: string) {
-    delete this.Admin[Name]; 
-    delete this.Members[Name]; 
-    delete this.Subgroups[Name];
-    this.save(Name);
+  Remove_member(name: string, member: string): Observable<any> {
+    return this.http.post(`${this.URL}/removeMember`, { name, member });
   }
-  save(Name: string){
-    localStorage.setItem("Members "+Name, this.Members[Name]);
-    localStorage.setItem("Admin "+Name, this.Admin[Name]);
-    localStorage.setItem("Subgroups "+Name, this.Subgroups[Name]);
-    localStorage.setItem("Requests "+Name, this.Requests[Name])
+
+  getItem(name: string): Observable<any> {
+    return this.http.get(`${this.URL}/getItem/${name}`);
+  }
+
+  AddRequest(name: string, user: string): Observable<any> {
+    return this.http.post(`${this.URL}/addRequest`, { name, user });
+  }
+
+  removeItem(name: string): Observable<any> {
+    return this.http.delete(`${this.URL}/removeItem/${name}`);
   }
 }

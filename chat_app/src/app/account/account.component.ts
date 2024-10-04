@@ -68,8 +68,8 @@ export class AccountComponent implements OnInit {
     this.privileges = this.info[3];
     if(this.privileges == "Super Admin" || this.privileges == "Group Admin"){
       this.groups = this.userService.getGroups(this.username);
-      for(var group in this.groups){
-        const result = this.chatroomService.getItem(this.groups[group]);
+      for (const group of this.groups) {
+        const result = this.chatroomService.getItem(group);
         if (result[2] == this.username){
           var temp = [];
           for(var set in result[0]){

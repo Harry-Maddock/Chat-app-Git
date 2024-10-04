@@ -1,23 +1,38 @@
 <div *ngIf="privileges === 'Group Admin' || privileges === 'Super Admin'">
-    Currently managing: {{chatName}}
+    <p>Currently managing: {{ chatName }}</p>
     <br><br><br>
 
     <table class="bordered">
-        <tr><th>Current members</th><th>remove?</th></tr>
-        <tr *ngFor="let member of Members; let i = index">
-            <td>{{ Members[i] }}</td>
-            <td><button id="remove" (click)="remove(Requests[i])">remove</button></td>
-        </tr>
+        <thead>
+            <tr>
+                <th>Current members</th>
+                <th>Remove?</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let member of Members; let i = index">
+                <td>{{ member }}</td>
+                <td><button id="remove" (click)="remove(member)">Remove</button></td>
+            </tr>
+        </tbody>
     </table>
     <br><br><br>
     <table class="bordered">
-        <tr><th>Current requests</th><th>approve</th><th>deny</th></tr>
-        <tr *ngFor="let request of Requests; let i = index">
-            <td>{{ Requests[i] }}</td>
-            <td><button id="remove" (click)="approve(Requests[i])">approve</button></td>
-            <td><button id="deny" (click)="deny(Requests[i])">deny</button></td>
-        </tr>
+        <thead>
+            <tr>
+                <th>Current requests</th>
+                <th>Approve</th>
+                <th>Deny</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let request of Requests; let i = index">
+                <td>{{ request }}</td>
+                <td><button id="approve" (click)="approve(request)">Approve</button></td>
+                <td><button id="deny" (click)="deny(request)">Deny</button></td>
+            </tr>
+        </tbody>
     </table>
     <br><br><br>
-    <button id="Back" (click)="back()">back</button>
+    <button id="back" (click)="back()">Back</button>
 </div>

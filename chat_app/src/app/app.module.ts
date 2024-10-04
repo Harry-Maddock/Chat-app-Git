@@ -8,24 +8,22 @@ import { AccountComponent } from "./account/account.component";
 import { HomeComponent } from "./home/home.component";
 import { ChatComponent } from "./chat/chat.component";
 import { UserService } from './user.service'; 
-import { ChatManagementComponent } from "./chat-management/chat-management.component";
+import { ChatRoomsService } from "./chat-management/chat-management.component";
 
 @NgModule({
-    declarations: [
+    declarations: [],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule, 
         AppComponent,
         LoginComponent,
         ChatComponent,
         HomeComponent,
         AccountComponent,
-        ChatManagementComponent
-    ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        FormsModule, 
+        ChatRoomsService
     ],
     providers: [UserService],
     bootstrap: [AppComponent]
 })
 export class AppModule {}
-

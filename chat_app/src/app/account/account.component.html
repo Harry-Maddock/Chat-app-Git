@@ -1,47 +1,72 @@
-welcome back {{username}}!
-<p> <br>
-your email is {{email}}
-<p> <br>
-Your are currently a {{privileges}}
-<p> <br>
-You are a part of the following chats:
-<table class="bordered">
-    <tr><th>Chat Name</th><th>Chat Sub Groups</th><th>Group Admin</th><th>view</th></tr>
-    <tr *ngFor="let group of groups; let i = index">
-        <td>{{ member_of[i] }}</td>
-        <td>{{ sub_groups[i] }}</td>
-        <td>{{ admins[i] }}</td>
-        <td> <button (click)="chat(member_of[i])">view</button></td>
-    </tr>
-</table>
-<p> <br>
-<div *ngIf="privileges === 'Chat User'">
-    Chats you can join:
+<div>
+    <p>Welcome back {{username}}!</p>
+    <p>Your email is {{email}}</p>
+    <p>You are currently a {{privileges}}</p>
+    <p>You are a part of the following chats:</p>
     <table class="bordered">
-        <tr><th>Chat Name</th><th>Chat Sub Groups</th><th>Group Admin</th><th>request to join</th></tr>
-        <tr *ngFor="let group of groups; let i = index">
-            <td>{{ groups[i] }}</td>
-            <td>{{ sub_groups[i] }}</td>
-            <td>{{ admins[i] }}</td>
-            <td> <button (click)="request(groups[i])">Request</button></td>
-        </tr>
+        <thead>
+            <tr>
+                <th>Chat Name</th>
+                <th>Chat Sub Groups</th>
+                <th>Group Admin</th>
+                <th>View</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let group of groups; let i = index">
+                <td>{{ member_of[i] }}</td>
+                <td>{{ sub_groups[i] }}</td>
+                <td>{{ admins[i] }}</td>
+                <td><button (click)="chat(member_of[i])">View</button></td>
+            </tr>
+        </tbody>
     </table>
-</div>
-<button id="login" (click)="logout()">Logout</button>
-<button id="delete" (click)="delete_account()">Delete</button>
+    <div *ngIf="privileges === 'Chat User'">
+        <p>Chats you can join:</p>
+        <table class="bordered">
+            <thead>
+                <tr>
+                    <th>Chat Name</th>
+                    <th>Chat Sub Groups</th>
+                    <th>Group Admin</th>
+                    <th>Request to Join</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let group of groups; let i = index">
+                    <td>{{ groups[i] }}</td>
+                    <td>{{ sub_groups[i] }}</td>
+                    <td>{{ admins[i] }}</td>
+                    <td><button (click)="request(groups[i])">Request</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <button id="login" (click)="logout()">Logout</button>
+    <button id="delete" (click)="delete_account()">Delete</button>
 
-<div *ngIf="privileges === 'Group Admin' || privileges === 'Super Admin'">
-    Create new chat room? Enter the name below: <br>
-    <input type="Chat room name" [(ngModel)]="Added_group"> <br>
-    <button id="Add" (click)="Add_group()">Add</button>
-    Chats you admin:
-    <table class="bordered">
-        <tr><th>Chat Name</th><th>Chat Sub Groups</th><th>Enrolled Users</th><th>Manage</th></tr>
-        <tr *ngFor="let group of groups; let i = index">
-            <td>{{ groups[i] }}</td>
-            <td>{{ sub_groups[i] }}</td>
-            <td>{{ users[i] }}</td>
-            <td><button id="Manage" (click)="Manage(groups[i])">Manage</button></td>
-        </tr>
-    </table>
+    <div *ngIf="privileges === 'Group Admin' || privileges === 'Super Admin'">
+        <p>Create new chat room? Enter the name below:</p>
+        <input type="text" [(ngModel)]="Added_group" placeholder="Chat room name">
+        <button id="Add" (click)="Add_group()">Add</button>
+        <p>Chats you admin:</p>
+        <table class="bordered">
+            <thead>
+                <tr>
+                    <th>Chat Name</th>
+                    <th>Chat Sub Groups</th>
+                    <th>Enrolled Users</th>
+                    <th>Manage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let group of groups; let i = index">
+                    <td>{{ group }}</td>
+                    <td>{{ sub_groups[i] }}</td>
+                    <td>{{ users[i] }}</td>
+                    <td><button id="Manage" (click)="Manage(groups[i])">Manage</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

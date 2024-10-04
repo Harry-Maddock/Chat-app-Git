@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from "@angular/forms";
 import { Router, RouterModule } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -10,63 +12,85 @@ import { Router, RouterModule } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent implements OnInit{
+export class LoginComponent implements OnInit {
   sign_in_username = '';
   sign_in_password = '';
   username = '';
   password = '';
   otherpassword = '';
   email = '';
-  info = [];
+  info: any;
 
-  constructor(private userService: UserService, private router: Router){}
+  constructor(private userService: UserService, private router: Router) { }
+
   Signup() {
-    if (this.password != this.otherpassword){
-      alert("Passwords do not match, try again")
+    if (this.password !== this.otherpassword) {
+      alert("Passwords do not match, try again");
       this.empty();
-    }
-    else{
-      this.info = this.userService.getItem(this.username);
-      if(!(this.info == undefined)){
-      alert("Username taken");
-      this.empty();
-      }
-      else {
-        this.userService.setItem(this.username, this.password, this.email);
-        alert("Signed up successfully")
-        this.empty();
-      }
+    } else {
+      this.userService.getItem(this.username).subscribe(
+        data => {
+          // If the user exists, data will not be null
+          if (data) {
+            alert("Username taken");
+            this.empty();
+          } else {
+            // Proceed to register the user
+            this.userService.register(this.username, this.password, this.email).subscribe(
+              response => {
+                alert("Signed up successfully");
+                this.empty();
+              },
+              (error: HttpErrorResponse) => {
+                alert("Error during signup: " + error.message);
+                this.empty();
+              }
+            );
+          }
+        },
+        (error: HttpErrorResponse) => {
+          alert("Error fetching user: " + error.message);
+          this.empty();
+        }
+      );
     }
   }
-  Login(){
-    this.info = this.userService.getItem(this.sign_in_username);
-    if(!(this.info == undefined)){
-      if(this.info[0] == this.sign_in_password){
-        document.cookie="Login_id="+this.sign_in_username+";Max-Age=10000"
+
+  Login() {
+    this.userService.getItem(this.sign_in_username).subscribe(
+      data => {
+        // If user exists
+        if (data) {
+          if (data.password === this.sign_in_password) {
+            document.cookie = "Login_id=" + this.sign_in_username + ";Max-Age=10000";
+            this.empty();
+            this.router.navigateByUrl(`/account`);
+          } else {
+            alert("Username or password incorrect");
+            this.empty();
+          }
+        } else {
+          alert("ERROR: username not found");
+          this.empty();
+        }
+      },
+      (error: HttpErrorResponse) => {
+        alert("Error fetching user: " + error.message);
         this.empty();
-        this.router.navigateByUrl(`/account`);
       }
-      else {
-        alert("Username or password incorrect");
-        this.empty();
-      }
-    }
-    else{
-      alert("ERROR: username not found");
-      this.empty();
-    }
+    );
   }
-  
-  empty(){
+
+  empty() {
     this.sign_in_username = '';
     this.sign_in_password = '';
     this.username = '';
     this.password = '';
     this.otherpassword = '';
     this.email = '';
-    this.info = [];
-
+    this.info = undefined;
   }
+
   ngOnInit() {
   }
 }

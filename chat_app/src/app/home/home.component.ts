@@ -13,6 +13,7 @@ export class HomeComponent {
   constructor(private router: Router){}
 
   goToLogin() {
+    console.log('Navigating to login...');
     this.router.navigateByUrl('/login');
   }
   goToAccount() {

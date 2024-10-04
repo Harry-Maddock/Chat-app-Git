@@ -47,20 +47,26 @@ export class ChatManagementComponent implements OnInit {
   }
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-    this.chatName = params.get('chat_name');
+        this.chatName = params.get('chat_name');
     });
-    let Name = document.cookie.split(";");
-    Name = (Name[0].split("="));
-    this.info = this.userService.getItem(Name[1]);
-    this.username = Name[1];
-    this.email = this.info[1];
-    this.privileges = this.info[3];
-    if(!(this.chatName == null)){
-      var room = this.chatroomService.getItem(this.chatName);
-      [this.Members, this.Rooms, this.Admins, this.Requests] = room;
-      if(this.Requests[0] == "undefined"){
-        this.Requests.shift();
-      }
+
+    const cookieData = document.cookie.split(";").find(row => row.trim().startsWith('username='));
+    if (cookieData) {
+        this.username = cookieData.split("=")[1];
+        this.info = this.userService.getItem(this.username);
+        this.email = this.info[1];
+        this.privileges = this.info[3];
+        
+        if (this.chatName) {
+            const roomData = this.chatroomService.getItem(this.chatName);
+            this.Members = roomData[0];
+            this.Rooms = roomData[1];
+            this.Admins = roomData[2];
+            this.Requests = roomData[3];
+
+            // Remove any 'undefined' entries from Requests
+            this.Requests = this.Requests.filter(request => request !== "undefined");
+        }
     }
   }
 }
