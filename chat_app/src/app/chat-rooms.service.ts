@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class ChatRoomsService {
   private URL = 'http://localhost:3000'; // Your server URL
-
+  Admin: { [key: string]: any } = {};
   constructor(private http: HttpClient) {}
 
   set_Item(admin: string, name: string): Observable<any> {

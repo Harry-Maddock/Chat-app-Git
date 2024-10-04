@@ -17,7 +17,7 @@
                 <td>{{ member_of[i] }}</td>
                 <td>{{ sub_groups[i] }}</td>
                 <td>{{ admins[i] }}</td>
-                <td><button (click)="chat(member_of[i])">View</button></td>
+                <td><a routerLink="/chat/:id">Chat Management</a></td>
             </tr>
         </tbody>
     </table>
@@ -37,7 +37,7 @@
                     <td>{{ groups[i] }}</td>
                     <td>{{ sub_groups[i] }}</td>
                     <td>{{ admins[i] }}</td>
-                    <td><button (click)="request(groups[i])">Request</button></td>
+                    <td><button (click)="makeRequest(groups[i], username)">Request</button></td>
                 </tr>
             </tbody>
         </table>
@@ -64,7 +64,7 @@
                     <td>{{ group }}</td>
                     <td>{{ sub_groups[i] }}</td>
                     <td>{{ users[i] }}</td>
-                    <td><button id="Manage" (click)="Manage(groups[i])">Manage</button></td>
+                    <td><a routerLink="/chat-manage/:id">Chat Management</a></td>
                 </tr>
             </tbody>
         </table>

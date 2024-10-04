@@ -17,7 +17,6 @@ export class ChatManagementComponent implements OnInit {
   username: string = '';
   email: string = '';
   privileges: string = '';
-  info = [];
   Rooms: string[] = [];
   Admins: string[] = [];
   Requests: string[] = [];
@@ -38,7 +37,7 @@ export class ChatManagementComponent implements OnInit {
   }
   remove(member: string){
     if(this.chatName != null){
-      this.userService.remove_group(this.chatName, member);
+      this.userService.removeGroup(this.chatName, member);
       this.chatroomService.Remove_member(this.chatName, member);
     }
   }
@@ -53,16 +52,26 @@ export class ChatManagementComponent implements OnInit {
     const cookieData = document.cookie.split(";").find(row => row.trim().startsWith('username='));
     if (cookieData) {
         this.username = cookieData.split("=")[1];
-        this.info = this.userService.getItem(this.username);
-        this.email = this.info[1];
-        this.privileges = this.info[3];
+        this.userService.getItem(this.username).subscribe(
+          info => {
+            this.email = info.email; 
+            this.privileges = info.privileges;
+          },
+          error => {
+            console.error("Error fetching user information:", error);
+          })
         
         if (this.chatName) {
-            const roomData = this.chatroomService.getItem(this.chatName);
-            this.Members = roomData[0];
-            this.Rooms = roomData[1];
-            this.Admins = roomData[2];
-            this.Requests = roomData[3];
+          this.chatroomService.getItem(this.chatName).subscribe(
+            info => {
+              this.Members = info.Members;
+              this.Rooms = info.Rooms;
+              this.Admins = info.Admins;
+              this.Requests = info.Requests;
+            },
+            error => {
+              console.error("Error fetching user information:", error);
+            })
 
             // Remove any 'undefined' entries from Requests
             this.Requests = this.Requests.filter(request => request !== "undefined");
