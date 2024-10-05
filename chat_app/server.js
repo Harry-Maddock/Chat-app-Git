@@ -6,8 +6,8 @@ const cors = require('cors');
 
 const app = express();
 const PORT = 3000;  
-const mongoUrl = 'mongodb://localhost:27017';  // Change this to your MongoDB connection string
-const dbName = 'ChatApp';  // Your database name
+const mongoUrl = 'mongodb://localhost:27017'; 
+const dbName = 'ChatApp';  
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -77,6 +77,13 @@ app.post('/removeMember', (req, res) => {
 app.get('/getItem/:name', (req, res) => {
     const name = req.params.name;
     db.collection('chatrooms').findOne({ name })
+        .then(result => res.send(result))
+        .catch(err => res.status(500).send(err));
+});
+
+
+app.get('/getAll', (req, res) => {
+    db.collection('chatrooms').find({}).toArray()
         .then(result => res.send(result))
         .catch(err => res.status(500).send(err));
 });

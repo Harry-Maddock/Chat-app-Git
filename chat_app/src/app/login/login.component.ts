@@ -4,11 +4,17 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from "@angular/forms";
 import { Router, RouterModule } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http'; 
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, RouterModule],
+  imports: [
+  ReactiveFormsModule, 
+  FormsModule,
+  RouterModule, 
+  HttpClientModule
+],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -21,24 +27,25 @@ export class LoginComponent implements OnInit {
   email = '';
   info: any;
 
-  constructor(private userService: UserService, private router: Router) { }
+  constructor(private userService: UserService, private router: Router) {
+    console.log('UserService:', userService);
+   }
 
   Signup() {
     if (this.password !== this.otherpassword) {
       alert("Passwords do not match, try again");
       this.empty();
     } else {
-      this.userService.getItem(this.username).subscribe(
+      this.userService.GetUser(this.username).subscribe(
         data => {
-          // If the user exists, data will not be null
           if (data) {
             alert("Username taken");
             this.empty();
           } else {
-            // Proceed to register the user
-            this.userService.register(this.username, this.password, this.email).subscribe(
+            this.userService.Register(this.username, this.password, this.email).subscribe(
               response => {
                 alert("Signed up successfully");
+                console.log(response);
                 this.empty();
               },
               (error: HttpErrorResponse) => {
@@ -57,9 +64,8 @@ export class LoginComponent implements OnInit {
   }
 
   Login() {
-    this.userService.getItem(this.sign_in_username).subscribe(
+    this.userService.GetUser(this.sign_in_username).subscribe(
       data => {
-        // If user exists
         if (data) {
           if (data.password === this.sign_in_password) {
             document.cookie = "Login_id=" + this.sign_in_username + ";Max-Age=10000";

@@ -33,22 +33,22 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let group of groups; let i = index">
-                    <td>{{ groups[i] }}</td>
-                    <td>{{ sub_groups[i] }}</td>
-                    <td>{{ admins[i] }}</td>
-                    <td><button (click)="makeRequest(groups[i], username)">Request</button></td>
+                <tr *ngFor="let group of allGroups">
+                    <td>{{ group[0] }}</td>
+                    <td>{{ group[1] }}</td>
+                    <td>{{ group[2] }}</td>
+                    <td><button (click)="makeRequest(group, username)">Request</button></td>
                 </tr>
             </tbody>
         </table>
     </div>
     <button id="login" (click)="logout()">Logout</button>
-    <button id="delete" (click)="delete_account()">Delete</button>
+    <button id="delete" (click)="deleteAccount()">Delete</button>
 
     <div *ngIf="privileges === 'Group Admin' || privileges === 'Super Admin'">
         <p>Create new chat room? Enter the name below:</p>
         <input type="text" [(ngModel)]="Added_group" placeholder="Chat room name">
-        <button id="Add" (click)="Add_group()">Add</button>
+        <button id="Add" (click)="addGroup()">Add</button>
         <p>Chats you admin:</p>
         <table class="bordered">
             <thead>

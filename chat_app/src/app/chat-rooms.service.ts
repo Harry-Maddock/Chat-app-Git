@@ -10,7 +10,7 @@ export class ChatRoomsService {
   Admin: { [key: string]: any } = {};
   constructor(private http: HttpClient) {}
 
-  set_Item(admin: string, name: string): Observable<any> {
+  CreateRoom(admin: string, name: string): Observable<any> {
     return this.http.post(`${this.URL}/setItem`, { admin, name });
   }
 
@@ -30,15 +30,19 @@ export class ChatRoomsService {
     return this.http.post(`${this.URL}/removeMember`, { name, member });
   }
 
-  getItem(name: string): Observable<any> {
+  GetChatRoom(name: string): Observable<any> {
     return this.http.get(`${this.URL}/getItem/${name}`);
+  }
+
+  GetAllRooms():Observable<any> {
+    return this.http.get(`${this.URL}/getAll`);
   }
 
   AddRequest(name: string, user: string): Observable<any> {
     return this.http.post(`${this.URL}/addRequest`, { name, user });
   }
 
-  removeItem(name: string): Observable<any> {
+  RemoveItem(name: string): Observable<any> {
     return this.http.delete(`${this.URL}/removeItem/${name}`);
   }
 }

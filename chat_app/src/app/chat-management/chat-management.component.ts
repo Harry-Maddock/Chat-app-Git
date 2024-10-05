@@ -25,7 +25,7 @@ export class ChatManagementComponent implements OnInit {
 
   approve(member: string){
     if(this.chatName != null){
-      this.userService.addGroup(member, this.chatName);
+      this.userService.AddGroup(member, this.chatName);
       this.chatroomService.Remove_request(this.chatName, member);
       this.chatroomService.Adduser(this.chatName, member);
     } 
@@ -37,7 +37,7 @@ export class ChatManagementComponent implements OnInit {
   }
   remove(member: string){
     if(this.chatName != null){
-      this.userService.removeGroup(this.chatName, member);
+      this.userService.RemoveGroup(this.chatName, member);
       this.chatroomService.Remove_member(this.chatName, member);
     }
   }
@@ -52,7 +52,7 @@ export class ChatManagementComponent implements OnInit {
     const cookieData = document.cookie.split(";").find(row => row.trim().startsWith('username='));
     if (cookieData) {
         this.username = cookieData.split("=")[1];
-        this.userService.getItem(this.username).subscribe(
+        this.userService.GetGroups(this.username).subscribe(
           info => {
             this.email = info.email; 
             this.privileges = info.privileges;
@@ -62,7 +62,7 @@ export class ChatManagementComponent implements OnInit {
           })
         
         if (this.chatName) {
-          this.chatroomService.getItem(this.chatName).subscribe(
+          this.chatroomService.GetChatRoom(this.chatName).subscribe(
             info => {
               this.Members = info.Members;
               this.Rooms = info.Rooms;
