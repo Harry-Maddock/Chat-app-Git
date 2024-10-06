@@ -31,7 +31,7 @@ export class ChatRoomsService {
   }
 
   GetChatRoom(name: string): Observable<any> {
-    return this.http.get(`${this.URL}/getItem/${name}`);
+    return this.http.get(`${this.URL}/getRoom/${name}`);
   }
 
   GetAllRooms():Observable<any> {
@@ -42,7 +42,12 @@ export class ChatRoomsService {
     return this.http.post(`${this.URL}/addRequest`, { name, user });
   }
 
-  RemoveItem(name: string): Observable<any> {
-    return this.http.delete(`${this.URL}/removeItem/${name}`);
+  DeleteRoom(name: string): Observable<any> {
+    return this.http.delete(`${this.URL}/DeleteRoom/${name}`);
   }
+
+  DeleteSubGroup(name: string, SubgroupName: string): Observable<any> {
+      return this.http.delete(`${this.URL}/RemoveSubgroup/${name}/${SubgroupName}`);
+  }
+
 }

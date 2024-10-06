@@ -26,46 +26,45 @@ export class LoginComponent implements OnInit {
   otherpassword = '';
   email = '';
   info: any;
+  LoggedIn:boolean = false;
 
-  constructor(private userService: UserService, private router: Router) {
-    console.log('UserService:', userService);
-   }
+  constructor(private userService: UserService, private router: Router) {}
 
   Signup() {
     if (this.password !== this.otherpassword) {
       alert("Passwords do not match, try again");
       this.empty();
     } else {
-      this.userService.GetUser(this.username).subscribe(
-        data => {
+      this.userService.GetUser(this.username).subscribe({
+        next: (data) => {
           if (data) {
             alert("Username taken");
             this.empty();
           } else {
-            this.userService.Register(this.username, this.password, this.email).subscribe(
-              response => {
+            this.userService.Register(this.username, this.password, this.email).subscribe({
+              next: (response) => {
                 alert("Signed up successfully");
                 console.log(response);
                 this.empty();
               },
-              (error: HttpErrorResponse) => {
+              error: (error)=> {
                 alert("Error during signup: " + error.message);
                 this.empty();
               }
-            );
+          });
           }
         },
-        (error: HttpErrorResponse) => {
+        error: (error) => {
           alert("Error fetching user: " + error.message);
           this.empty();
         }
-      );
+      });
     }
   }
 
   Login() {
-    this.userService.GetUser(this.sign_in_username).subscribe(
-      data => {
+    this.userService.GetUser(this.sign_in_username).subscribe({
+      next: (data) => {
         if (data) {
           if (data.password === this.sign_in_password) {
             document.cookie = "Login_id=" + this.sign_in_username + ";Max-Age=10000";
@@ -80,11 +79,11 @@ export class LoginComponent implements OnInit {
           this.empty();
         }
       },
-      (error: HttpErrorResponse) => {
+      error: (error) => {
         alert("Error fetching user: " + error.message);
         this.empty();
       }
-    );
+  });
   }
 
   empty() {
@@ -98,5 +97,6 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.LoggedIn = document.cookie.split("=")[1] === undefined
   }
 }

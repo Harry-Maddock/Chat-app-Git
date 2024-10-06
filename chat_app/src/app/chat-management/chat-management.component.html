@@ -1,38 +1,55 @@
-<div *ngIf="privileges === 'Group Admin' || privileges === 'Super Admin'">
-    <p>Currently managing: {{ chatName }}</p>
-    <br><br><br>
-
-    <table class="bordered">
-        <thead>
-            <tr>
-                <th>Current members</th>
-                <th>Remove?</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let member of Members; let i = index">
-                <td>{{ member }}</td>
-                <td><button id="remove" (click)="remove(member)">Remove</button></td>
-            </tr>
-        </tbody>
-    </table>
-    <br><br><br>
-    <table class="bordered">
-        <thead>
-            <tr>
-                <th>Current requests</th>
-                <th>Approve</th>
-                <th>Deny</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let request of Requests; let i = index">
-                <td>{{ request }}</td>
-                <td><button id="approve" (click)="approve(request)">Approve</button></td>
-                <td><button id="deny" (click)="deny(request)">Deny</button></td>
-            </tr>
-        </tbody>
-    </table>
-    <br><br><br>
-    <button id="back" (click)="back()">Back</button>
-</div>
+<p>Currently managing: {{ chatName }}</p>
+<br><br><br>
+<table class="bordered">
+    <thead>
+        <tr>
+            <th>Current members</th>
+            <th>Remove?</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let member of Members; let i = index">
+            @if(member != this.username){
+            <td>{{ member }}</td>
+            <td><button id="remove" (click)="remove(member)">Remove</button></td>
+            }
+        </tr>
+    </tbody>
+</table>
+<br><br><br>
+<table class="bordered">
+    <thead>
+        <tr>
+            <th>Current requests</th>
+            <th>Approve</th>
+            <th>Deny</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let request of this.Requests">
+            <td>{{ request }}</td>
+            <td><button id="approve" (click)="approve(request)">Approve</button></td>
+            <td><button id="deny" (click)="deny(request)">Deny</button></td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<table class="bordered">
+    <thead>
+        <tr>
+            <th>Sub group Name</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let room of this.Rooms">
+            <td>{{ room }}</td>
+            <td> <button id="delete" (click)="removeSubgroup(room)">Delete</button> </td>
+        </tr>
+    </tbody>
+</table>
+<p>Create new Sub chat? Enter the name below:</p>
+<input type="text" [(ngModel)]="SubgroupName" placeholder="Sub groups name">
+<button id="Add" (click)="addSubGroup()">Add</button>
+<br><br><br>
+<button id="back" (click)="back()">Back</button>

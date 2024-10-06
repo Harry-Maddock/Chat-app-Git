@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-    <h1>Welcome to Home</h1>
-    <button (click)="goToLogin()">Go to Login</button>
-    <button (click)="goToAccount()">Go to Account</button>
+    <button (click)="goToLogin()">Login</button>
+    <button (click)="goToAccount()">Account</button>
+    <button id="login" (click)="logout()">Logout</button>
+    <br>
   <router-outlet></router-outlet>
 </html>

@@ -29,7 +29,6 @@ export class AccountComponent implements OnInit {
   admins: any[] = [];
   allGroups: any[] = [];
   users: any[] = [];
-
   Added_group:string = "";
 
   
@@ -67,7 +66,6 @@ export class AccountComponent implements OnInit {
               list.push(results[i].subgroups)
               list.push(results[i].admin)
               this.allGroups.push(list)
-              console.log(this.allGroups)
             }
           }
         )
@@ -78,14 +76,21 @@ export class AccountComponent implements OnInit {
       this.router.navigateByUrl('/login');
     }
   }
-
-
-  makeRequest(name: string, user: string): void {
-    this.chatroomService.AddRequest(name, user).subscribe();
-  }
   logout() {
-    document.cookie = '';
-    this.router.navigate(['/login']);
+    document.cookie = "Login_id=" + '' + ";Max-Age=1";
+    this.router.navigate(['/login'])
+    sleep(1500).then(() => {
+      window.location.reload()});
+  }
+  makeRequest(name: string, user: string): void {
+    this.chatroomService.AddRequest(name, user).subscribe({
+      next: (response) => {
+        console.log("request successful", response)
+      },
+      error: (error) => {
+        console.error('Error making request', error);
+      }
+    });
   }
 
   deleteAccount() {
@@ -105,7 +110,6 @@ export class AccountComponent implements OnInit {
   }
 
   addGroup() {
-
     const addedGroup = this.Added_group; 
     this.chatroomService.CreateRoom(this.username, addedGroup).subscribe({
       next: (response) => {
@@ -118,6 +122,8 @@ export class AccountComponent implements OnInit {
       }
     });
   }
-
 }
 
+function sleep(ms: any) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

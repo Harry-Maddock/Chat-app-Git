@@ -1,19 +1,35 @@
-// server.js
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+
 const app = express();
+const http = require('http').createServer(app);;
 const PORT = 3000;  
 const mongoUrl = 'mongodb://localhost:27017'; 
 const dbName = 'ChatApp';  
+const socketIo = require('socket.io');
+
+const io = socketIo(http, {
+    cors: {
+        origin: "http://localhost:4200", 
+        methods: ["GET", "POST"],
+        allowedHeaders: ["Content-Type"],
+        credentials: true
+    }
+});
+const sockets = require('./socket.js');
+const serverListen = require('./listen.js');
+
+sockets.connect(io, PORT);
+
 
 app.use(cors());
 app.use(bodyParser.json());
 
 let db;
- 
+let users = {};
 
 MongoClient.connect(mongoUrl, { })
     .then(client => {
@@ -74,7 +90,7 @@ app.post('/removeMember', (req, res) => {
 });
 
 
-app.get('/getItem/:name', (req, res) => {
+app.get('/getRoom/:name', (req, res) => {
     const name = req.params.name;
     db.collection('chatrooms').findOne({ name })
         .then(result => res.send(result))
@@ -90,21 +106,40 @@ app.get('/getAll', (req, res) => {
 
 
 app.post('/addRequest', (req, res) => {
-    const { name, user } = req.body;
+    const roomName = req.body.name;
+    const user = req.body.user;
     db.collection('chatrooms').updateOne(
-        { name },
-        { $addToSet: { requests: user } }
+        { name: roomName },
+        { $addToSet: { requests: user } } 
     ).then(result => res.send(result))
     .catch(err => res.status(500).send(err));
 });
 
 
-app.delete('/removeItem/:name', (req, res) => {
+app.delete('/DeleteRoom/:name', (req, res) => {
     const name = req.params.name;
     db.collection('chatrooms').deleteOne({ name })
         .then(result => res.send(result))
         .catch(err => res.status(500).send(err));
 });
+
+app.delete('/RemoveSubgroup/:name/:SubgroupName', (req, res) => {
+    const roomName = req.params.name;
+    const subgroupToRemove = req.params.SubgroupName; 
+    db.collection('chatrooms').updateOne(
+        { name: roomName },
+        { $pull: { subgroups: subgroupToRemove } }
+    )
+    .then(result => { 
+        if (result.modifiedCount > 0) {
+            res.send({ message: 'Subgroup removed successfully' });
+        } else {
+            res.status(404).send({ message: 'Chatroom not found or subgroup does not exist' });
+        }
+    })
+    .catch(err => res.status(500).send(err));
+});
+
 
 app.post('/register', (req, res) => {
     const { username, password, email } = req.body;
@@ -136,7 +171,8 @@ app.delete('/user/:username', (req, res) => {
 });
 
 app.post('/user/addGroup', (req, res) => {
-    const { username, group } = req.body;
+    const username = req.body.username;
+    const group = req.body.group;
     db.collection('users').updateOne(
         { username },
         { $addToSet: { groups: group } }
@@ -160,6 +196,27 @@ app.post('/user/removeGroup', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+io.on('connection', (socket) => {
+    console.log('New user connected');
+
+    // Handle user joining
+    socket.on('join', (username) => {
+        users[socket.id] = username;
+        socket.broadcast.emit('userJoined', username);
+    });
+
+    // Handle new messages
+    socket.on('message', (message) => {
+        console.log(message)
+        socket.broadcast.emit('newMessage', message);
+    });
+
+    // Handle user disconnecting
+    socket.on('disconnect', () => {
+        const username = users[socket.id];
+        delete users[socket.id];
+        socket.broadcast.emit('userLeft', username);
+    });
 });
+
+serverListen.listen(app, PORT);
