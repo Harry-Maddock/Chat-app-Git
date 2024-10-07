@@ -30,6 +30,7 @@ export class AccountComponent implements OnInit {
   allGroups: any[] = [];
   users: any[] = [];
   Added_group:string = "";
+  AllUsers: any[] = [];
 
   
   constructor(private userService: UserService, private chatroomService: ChatRoomsService, private router: Router) {}
@@ -37,7 +38,12 @@ export class AccountComponent implements OnInit {
   ngOnInit(): void {
     if (document.cookie) {
       const username = document.cookie.split("=")[1];
-
+      this.userService.GetAllUsers().subscribe(
+        results => {  
+          for(let i=0; i<results.length; i++){
+            this.AllUsers.push([results[i].username, results[i].role])
+          }
+        });
       this.userService.GetUser(username).subscribe(
         info => {
         this.username = username;
@@ -82,6 +88,7 @@ export class AccountComponent implements OnInit {
     sleep(1500).then(() => {
       window.location.reload()});
   }
+  
   makeRequest(name: string, user: string): void {
     this.chatroomService.AddRequest(name, user).subscribe({
       next: (response) => {
@@ -121,6 +128,17 @@ export class AccountComponent implements OnInit {
         console.error('Error creating group', error);
       }
     });
+  }
+
+  Promote(username: string, role: string){
+    this.userService.PromoteUser(username, role).subscribe({
+      next: (response) => {
+        window.location.reload();
+      },
+      error: (error) => {
+        console.error('Error prmoting user', error);
+      }
+    })
   }
 }
 

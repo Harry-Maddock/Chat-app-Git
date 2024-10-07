@@ -1,0 +1,9 @@
+.message-box {
+    width: 300px; /* Set a fixed width */
+    max-height: 400px; /* Set a maximum height */
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
+    border: 1px solid #ccc; /* Optional: add a border */
+    padding: 10px; /* Optional: add padding */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: add a shadow */
+    background-color: #f9f9f9; /* Optional: background color */
+}

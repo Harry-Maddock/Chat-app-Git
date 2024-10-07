@@ -1,6 +1,6 @@
 <title>Login</title>
 
-@if(this.LoggedIn){
+@if(this.LoggedIn == '1'){
     Already a user? sign in<p></p>
 
     Username:
@@ -26,6 +26,8 @@
     <input type="password" [(ngModel)]="otherpassword"> <br>
 
     <button id="Sign up" (click)="Signup()">Sign up</button>
-}@else{
+}@else if(this.LoggedIn == '0'){
     Already logged in, please sign out to continue
+}@else if(this.LoggedIn == '2'){
+    Signing out... do not refresh the page
 }

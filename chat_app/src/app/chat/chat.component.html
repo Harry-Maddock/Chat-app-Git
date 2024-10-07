@@ -1,15 +1,39 @@
 <div>
     Currently viewing: {{chatName}}
 </div>
-<!-- Sidebar for users -->
+@if(rooms.length > 1){
+<table class="bordered">
+    <thead>
+        <tr>
+            <th>Sub group</th>
+            <th>Join</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let room of rooms">
+            <td>{{ room }}</td>
+            <td> <button (click)="subgroupConnect(room)">Join</button></td>
+        </tr>
+    </tbody>
+</table>
+}
+@else{
+    No rooms yet created for this group 
+}
 
-<!-- Chat area -->
-<div>
-    <div *ngFor="let message of messages">
-        {{ message }}
+
+<div *ngIf="subgroup != ''">
+    <div class="message-box">
+        <div *ngFor="let message of messages">
+            {{ message }}
+        </div>
     </div>
-    
-    <input [(ngModel)]="messagecontent" placeholder="Type a message" />
-    <button (click)="chat()">Send</button>
+    <div>
+        <input [(ngModel)]="messagecontent" placeholder="Type a message" />
+        <button (click)="chat()">Send</button>
+    </div>
 </div>
-
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+</script>

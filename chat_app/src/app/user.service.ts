@@ -36,4 +36,13 @@ export class UserService {
   RemoveGroup(username: string, group: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/user/removeGroup`, { username, group });
   }
+
+  GetAllUsers():Observable<any> {
+    return this.http.get(`${this.baseUrl}/getAllUsers`);
+  }
+
+  PromoteUser(username: string, role: string):Observable<any> {
+    console.log(role)
+    return this.http.get(`${this.baseUrl}/promote/${username}/${role}`);
+  }
 }

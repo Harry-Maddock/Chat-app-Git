@@ -2,42 +2,64 @@ const express = require('express');
 const { MongoClient } = require('mongodb');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
-
-const app = express();
-const http = require('http').createServer(app);;
-const PORT = 3000;  
-const mongoUrl = 'mongodb://localhost:27017'; 
-const dbName = 'ChatApp';  
 const socketIo = require('socket.io');
 
-const io = socketIo(http, {
+const app = express();
+const http = require('http').createServer(app);
+const PORT = process.env.PORT || 3000
+const mongoUrl = 'mongodb://localhost:27017'; 
+const dbName = 'ChatApp';
+
+
+const { createServer } = require('node:http');
+const { join } = require('node:path');
+const { Server } = require('socket.io');
+
+const server = createServer(app);
+const io = new Server(server,  {
     cors: {
-        origin: "http://localhost:4200", 
-        methods: ["GET", "POST"],
-        allowedHeaders: ["Content-Type"],
-        credentials: true
+        origin: 'http://localhost:4200', 
+        methods: ['GET', 'POST'],
+        allowedHeaders: ['my-custom-header'],
+        credentials: true 
     }
 });
-const sockets = require('./socket.js');
-const serverListen = require('./listen.js');
 
-sockets.connect(io, PORT);
-
+app.get('/', (req, res) => {
+  res.sendFile(join(__dirname, 'index.html'));
+});
 
 app.use(cors());
 app.use(bodyParser.json());
 
 let db;
-let users = {};
 
-MongoClient.connect(mongoUrl, { })
+
+MongoClient.connect(mongoUrl, {})
     .then(client => {
         console.log('Connected to Database');
         db = client.db(dbName);
     })
     .catch(err => console.error(err));
 
+
+io.on('connection', (socket) => {
+    console.log('A user connected:', socket.id);
+
+    socket.on('chatMessage', (data) => {
+        const { roomName, message, sender } = data;
+        console.log('message: ' + message);
+        io.to(roomName).emit('message', { message, sender });
+    });
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+    });
+
+    socket.on('joinRoom', (roomName) => {
+        socket.join(roomName);
+    });
+});
 
 app.post('/setItem', (req, res) => {
     const { admin, name } = req.body;
@@ -72,10 +94,40 @@ app.post('/removeRequest', (req, res) => {
 
 app.post('/addSubgroup', (req, res) => {
     const { name, subgroup } = req.body;
+    var newSubgroup = {}
     db.collection('chatrooms').updateOne(
         { name },
         { $addToSet: { subgroups: subgroup } }
-    ).then(result => res.send(result))
+    ).then(
+        newSubgroup = {
+            groupname: name,
+            name: subgroup,
+            last_5: []
+        },
+        db.collection('subgroups').insertOne(newSubgroup).then(
+        result => res.send(result))
+        .catch(err => res.status(500).send(err)))
+    .catch(err => res.status(500).send(err));
+});
+
+app.post('/updateLastFive', (req, res) => {
+    const { chatName, subgroup, message } = req.body;
+    db.collection('subgroups').updateOne(
+        { groupname: chatName, 
+            name: subgroup[0] },
+        { $addToSet: { last_5: message }}
+    )
+    .then(result => res.send(result))
+    .catch(err => res.status(500).send(err));
+});
+
+app.get('/getLastFive/:chatName/:subgroup', (req, res) => {
+    const { chatName, subgroup } = req.params;
+
+    db.collection('subgroups').findOne(
+        { groupname: chatName, name: subgroup }
+    )
+    .then(result => res.send(result))
     .catch(err => res.status(500).send(err));
 });
 
@@ -140,6 +192,11 @@ app.delete('/RemoveSubgroup/:name/:SubgroupName', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
+app.get('/getAllUsers', (req, res) => {
+    db.collection('users').find({}).toArray()
+        .then(result => res.send(result))
+        .catch(err => res.status(500).send(err));
+});
 
 app.post('/register', (req, res) => {
     const { username, password, email } = req.body;
@@ -170,6 +227,16 @@ app.delete('/user/:username', (req, res) => {
         .catch(err => res.status(500).send(err));
 });
 
+app.get('/promote/:username/:role', (req, res) => {
+    const username = req.params.username;
+    const role = req.params.role;
+    db.collection('users').updateOne(
+        { username },
+        { $set: { role: role } }
+    ).then(result => res.send(result))
+    .catch(err => res.status(500).send(err));
+});
+
 app.post('/user/addGroup', (req, res) => {
     const username = req.body.username;
     const group = req.body.group;
@@ -196,27 +263,5 @@ app.post('/user/removeGroup', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-io.on('connection', (socket) => {
-    console.log('New user connected');
-
-    // Handle user joining
-    socket.on('join', (username) => {
-        users[socket.id] = username;
-        socket.broadcast.emit('userJoined', username);
-    });
-
-    // Handle new messages
-    socket.on('message', (message) => {
-        console.log(message)
-        socket.broadcast.emit('newMessage', message);
-    });
-
-    // Handle user disconnecting
-    socket.on('disconnect', () => {
-        const username = users[socket.id];
-        delete users[socket.id];
-        socket.broadcast.emit('userLeft', username);
-    });
-});
-
-serverListen.listen(app, PORT);
+server.listen(PORT, () => 
+    console.log(`Listening on port ${PORT}`));

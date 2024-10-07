@@ -11,20 +11,35 @@ const SERVER_URL = 'http://localhost:3000';
 })
 export class SocketService {
     private socket!: Socket<DefaultEventsMap, DefaultEventsMap>;
-    private messageSubject = new Subject<string>();
+    private messageSubject = new Subject<{message: string, sender: string}>();
     constructor() {}
-  //Setup Connection to socket server 
-    initSocket(){
-      this.socket = io(SERVER_URL);
-      return()=>{this.socket.disconnect();}
-    }
-    //Emit a message to the socket server
-    send (message: string){
-      this.socket.emit('message', message);
-    }
 
-    //Listen for "message" events from the socket server 
-    getMessage(): Observable<string> {
+    initSocket(roomName: string, username: string){
+      this.socket = io(SERVER_URL);
+      this.socket.emit('joinRoom', roomName, username);
+      this.socket.on('message', (data) => {
+        this.messageSubject.next(data);
+      });
+      return()=>{
+        this.send(roomName, `User ${username} just left the server`, "Server").then(() => {
+          this.socket.disconnect();
+      });
+    }
+  }
+
+  send(roomName: string, message: string, sender: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        this.socket.emit('chatMessage', { roomName, message, sender }, (response: any) => {
+            if (response && response.success) {
+                resolve();
+            } else {
+                reject(new Error('Message not sent'));
+            }
+        });
+    });
+  }
+
+    getMessage(): Observable<{message: string, sender: string}> {
       return this.messageSubject.asObservable();
     }
 }

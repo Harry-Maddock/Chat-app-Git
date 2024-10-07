@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
   otherpassword = '';
   email = '';
   info: any;
-  LoggedIn:boolean = false;
+  LoggedIn:string = '0';
 
   constructor(private userService: UserService, private router: Router) {}
 
@@ -97,6 +97,15 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.LoggedIn = document.cookie.split("=")[1] === undefined
+    if(document.cookie.split("=")[1] === undefined){
+      this.LoggedIn = '1'
+    }
+
+    else if(document.cookie.split("=")[1] === ''){
+      this.LoggedIn = "2"
+    }
+    else{
+      this.LoggedIn = "0"
+    }
   }
 }

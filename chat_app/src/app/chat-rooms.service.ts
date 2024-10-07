@@ -6,48 +6,55 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ChatRoomsService {
-  private URL = 'http://localhost:3000'; // Your server URL
+  private baseUrl = 'http://localhost:3000'; // Your server URL
   Admin: { [key: string]: any } = {};
   constructor(private http: HttpClient) {}
 
   CreateRoom(admin: string, name: string): Observable<any> {
-    return this.http.post(`${this.URL}/setItem`, { admin, name });
+    return this.http.post(`${this.baseUrl}/setItem`, { admin, name });
   }
 
   Adduser(name: string, username: any): Observable<any> {
-    return this.http.post(`${this.URL}/addUser`, { name, username });
+    return this.http.post(`${this.baseUrl}/addUser`, { name, username });
   }
 
   Remove_request(name: string, member: string): Observable<any> {
-    return this.http.post(`${this.URL}/removeRequest`, { name, member });
+    return this.http.post(`${this.baseUrl}/removeRequest`, { name, member });
   }
 
   Addsubgroup(name: string, subgroup: string): Observable<any> {
-    return this.http.post(`${this.URL}/addSubgroup`, { name, subgroup });
+    return this.http.post(`${this.baseUrl}/addSubgroup`, { name, subgroup });
   }
 
   Remove_member(name: string, member: string): Observable<any> {
-    return this.http.post(`${this.URL}/removeMember`, { name, member });
+    return this.http.post(`${this.baseUrl}/removeMember`, { name, member });
   }
 
   GetChatRoom(name: string): Observable<any> {
-    return this.http.get(`${this.URL}/getRoom/${name}`);
+    return this.http.get(`${this.baseUrl}/getRoom/${name}`);
   }
 
   GetAllRooms():Observable<any> {
-    return this.http.get(`${this.URL}/getAll`);
+    return this.http.get(`${this.baseUrl}/getAll`);
   }
 
   AddRequest(name: string, user: string): Observable<any> {
-    return this.http.post(`${this.URL}/addRequest`, { name, user });
+    return this.http.post(`${this.baseUrl}/addRequest`, { name, user });
   }
 
   DeleteRoom(name: string): Observable<any> {
-    return this.http.delete(`${this.URL}/DeleteRoom/${name}`);
+    return this.http.delete(`${this.baseUrl}/DeleteRoom/${name}`);
   }
 
   DeleteSubGroup(name: string, SubgroupName: string): Observable<any> {
-      return this.http.delete(`${this.URL}/RemoveSubgroup/${name}/${SubgroupName}`);
+      return this.http.delete(`${this.baseUrl}/RemoveSubgroup/${name}/${SubgroupName}`);
   }
 
+  updateLastFive(chatName: string, subgroup: string, message: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/updateLastFive`, { chatName, subgroup, message });
+  }
+  
+  getLastFiveMessages(chatName: string, subgroup: string): Observable<any> {
+  return this.http.get<any>(`${this.baseUrl}/getLastFive/${chatName}/${subgroup}`);
+  }
 }

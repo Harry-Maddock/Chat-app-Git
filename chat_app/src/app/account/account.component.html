@@ -47,7 +47,7 @@
     </table>
 </div>
 <button id="delete" (click)="deleteAccount()">Delete</button>
-
+<br><br>
 <div *ngIf="privileges === 'Group Admin' || privileges === 'Super Admin'">
     <p>Create new chat room? Enter the name below:</p>
     <input type="text" [(ngModel)]="Added_group" placeholder="Chat room name">
@@ -64,11 +64,40 @@
         </thead>
         <tbody>
             <tr *ngFor="let group of groups; let i = index">
+                @if(admins[i] == username || privileges === 'Super Admin'){
                 <td>{{ member_of[i] }}</td>
                 <td>{{ sub_groups[i] }}</td>
                 <td>{{ admins[i] }}</td>
-                <td><a [routerLink]="['/chatmanagement', member_of[i]]">Manage</a></td>
+                <td><a [routerLink]="['/chatmanagement', member_of[i]]">Manage</a></td>}
+                @if(admins.includes(username) != true){
+                    <td colspan = 4>You do not manage any groups, create one above!</td>
+                }
             </tr>
         </tbody>
     </table>
+</div>
+<br><br>
+<div *ngIf="privileges === 'Super Admin'">
+    
+    <table class="bordered">
+        <thead>
+            <tr>
+                <th>User Name</th>
+                <th>User Role</th>
+                <th>Promote to Admin</th>
+                <th>Promote to Super Admin</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let user of AllUsers">
+                @if(user[1] != "Super Admin"){
+                <td>{{ user[0] }} </td>
+                <td>{{ user[1] }} </td>
+                <td><button id="Add" (click)="Promote(user[0], 'Group Admin')">Promote to Admin</button></td>
+                <td><button id="Add" (click)="Promote(user[0], 'Super Admin')">Promote to Super Admin</button></td>
+                }
+            </tr>
+        </tbody>
+    </table>
+
 </div>
